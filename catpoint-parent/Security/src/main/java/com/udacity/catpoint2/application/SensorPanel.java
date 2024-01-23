@@ -1,9 +1,9 @@
-package com.udacity.catpoint.application;
+package com.udacity.catpoint2.application;
 
-import com.udacity.catpoint.data.Sensor;
-import com.udacity.catpoint.data.SensorType;
-import com.udacity.catpoint.service.SecurityService;
-import com.udacity.catpoint.service.StyleService;
+import com.udacity.catpoint2.data.Sensor;
+import com.udacity.catpoint2.data.SensorType;
+import com.udacity.catpoint2.service.SecurityService;
+import com.udacity.catpoint2.service.StyleService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

@@ -1,5 +1,5 @@
-package com.udacity.catpoint;
 
+package com.udacity.catpoint2;
 /**
  * Hello world!
  *

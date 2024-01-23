@@ -1,4 +1,4 @@
-package com.udacity.catpoint;
+package com.udacity.catpoint2;
 
 import static org.junit.Assert.assertTrue;
 

@@ -1,4 +1,4 @@
-package com.udacity.catpoint.data;
+package com.udacity.catpoint2.data;
 
 
 import com.google.common.collect.ComparisonChain;

@@ -1,8 +1,8 @@
-package com.udacity.catpoint.application;
+package com.udacity.catpoint2.application;
 
-import com.udacity.catpoint.data.AlarmStatus;
-import com.udacity.catpoint.service.SecurityService;
-import com.udacity.catpoint.service.StyleService;
+import com.udacity.catpoint2.data.AlarmStatus;
+import com.udacity.catpoint2.service.SecurityService;
+import com.udacity.catpoint2.service.StyleService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
