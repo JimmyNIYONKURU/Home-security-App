@@ -15,6 +15,12 @@ public class Sensor implements Comparable<Sensor> {
     private Boolean active;
     private SensorType sensorType;
 
+    // No-argument constructor for Gson
+    public Sensor() {
+        this.active = Boolean.FALSE;
+        this.sensorId = UUID.randomUUID();
+    }
+
     public Sensor(String name, SensorType sensorType) {
         this.name = name;
         this.sensorType = sensorType;

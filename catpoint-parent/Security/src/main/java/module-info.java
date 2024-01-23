@@ -6,5 +6,6 @@ module Security
     requires guava;
     requires com.google.gson;
     requires java.prefs;
+    opens com.udacity.catpoint2.data to com.google.gson;
 
 }
