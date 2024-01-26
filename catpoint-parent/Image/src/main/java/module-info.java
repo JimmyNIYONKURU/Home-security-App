@@ -1,6 +1,7 @@
 module Image
 {
-    exports com.udacity.catpoint;
+
+    exports com.udacity.catpoint.service;
     requires org.slf4j;
     requires software.amazon.awssdk.auth;
     requires software.amazon.awssdk.core;

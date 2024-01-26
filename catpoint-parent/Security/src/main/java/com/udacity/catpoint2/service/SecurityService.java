@@ -1,6 +1,6 @@
 package com.udacity.catpoint2.service;
 
-import com.udacity.catpoint.FakeImageService;
+import com.udacity.catpoint.service.FakeImageService;
 import com.udacity.catpoint2.application.StatusListener;
 import com.udacity.catpoint2.data.AlarmStatus;
 import com.udacity.catpoint2.data.ArmingStatus;

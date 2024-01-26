@@ -1,7 +1,7 @@
 
 package com.udacity.catpoint2.service;
 
-import com.udacity.catpoint.FakeImageService;
+import com.udacity.catpoint.service.FakeImageService;
 import com.udacity.catpoint2.data.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
