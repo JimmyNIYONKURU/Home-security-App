@@ -6,7 +6,8 @@ import java.util.Random;
 /**
  * Service that tries to guess if an image displays a cat.
  */
-public class FakeImageService {
+public class FakeImageService
+{
     private final Random r = new Random();
 
     public boolean imageContainsCat(BufferedImage image, float confidenceThreshhold) {
