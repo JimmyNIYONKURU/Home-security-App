@@ -1,7 +1,7 @@
 
 package com.udacity.catpoint2.service;
 
-import com.udacity.catpoint.service.FakeImageService;
+import com.udacity.catpoint.service.ImageService;
 import com.udacity.catpoint2.data.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ public class SecurityServiceTest {
     private SecurityService securityService;
     @BeforeEach
     public void setup() {
-        securityService = new SecurityService(securityRepository, (FakeImageService) imageService);
+        securityService = new SecurityService(securityRepository, imageService);
     }
     @Test
     public void whenArmedAndSensorActivated_setPendingAlarm() {
