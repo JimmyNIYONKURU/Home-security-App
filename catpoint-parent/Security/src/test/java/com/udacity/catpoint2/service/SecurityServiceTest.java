@@ -26,13 +26,18 @@ public class SecurityServiceTest {
     }
     @Test
     public void whenArmedAndSensorActivated_setPendingAlarm() {
-        when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
-        Sensor sensor = new Sensor("Door", SensorType.DOOR);
-        securityService.changeSensorActivationStatus(sensor, true);
-        verify(securityRepository).setAlarmStatus(AlarmStatus.PENDING_ALARM);
+
+
+            when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+            when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.NO_ALARM);
+            Sensor sensor = new Sensor("Door", SensorType.DOOR);
+            securityService.changeSensorActivationStatus(sensor, true);
+            verify(securityRepository).setAlarmStatus(AlarmStatus.PENDING_ALARM);
+
     }
     @Test
     public void whenSensorActivatedAndSystemPending_setAlarmState() {
+
         when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
         Sensor sensor = new Sensor("Window", SensorType.WINDOW);
         securityService.changeSensorActivationStatus(sensor, true);
