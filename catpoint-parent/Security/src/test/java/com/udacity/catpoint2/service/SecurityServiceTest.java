@@ -47,9 +47,8 @@ public class SecurityServiceTest {
     public void whenAllSensorsInactiveAndSystemPending_setNoAlarm() {
         Set<Sensor> allSensors = new HashSet<>();
         allSensors.add(new Sensor("Door", SensorType.DOOR));
-        allSensors.forEach(sensor -> sensor.setActive(false));
+        allSensors.forEach(sensor -> sensor.setActive(true));
         when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
-        when(securityRepository.getSensors()).thenReturn(allSensors);
         allSensors.forEach(sensor -> securityService.changeSensorActivationStatus(sensor, false));
         verify(securityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
