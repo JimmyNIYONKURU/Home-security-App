@@ -93,6 +93,22 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>High</threshold>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal> <!-- Runs SpotBugs analysis -->
+            </goals>
+            <phase>verify</phase> <!-- Bind to a lifecycle phase, e.g., verify -->
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
