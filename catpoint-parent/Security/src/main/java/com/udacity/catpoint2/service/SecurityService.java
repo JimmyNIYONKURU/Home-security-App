@@ -8,7 +8,9 @@ import com.udacity.catpoint2.data.SecurityRepository;
 import com.udacity.catpoint2.data.Sensor;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 /**
  * Service that receives information about changes to the security system. Responsible for
@@ -31,11 +33,32 @@ public class SecurityService {
      * @param armingStatus
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
-        if(armingStatus == ArmingStatus.DISARMED) {
+        if (armingStatus == ArmingStatus.ARMED_HOME || armingStatus == ArmingStatus.ARMED_AWAY) {
+            // Reset all sensors to inactive
+            resetAllSensorsToInactive();
+        }
+
+        if (armingStatus == ArmingStatus.DISARMED) {
             setAlarmStatus(AlarmStatus.NO_ALARM);
         }
+
         securityRepository.setArmingStatus(armingStatus);
     }
+
+    /**
+     * Resets all sensors to inactive state.
+     */
+    private void resetAllSensorsToInactive() {
+
+        List<Sensor> sensorsToUpdate = new ArrayList<>(securityRepository.getSensors());
+
+        for (Sensor sensor : sensorsToUpdate) {
+            sensor.setActive(false);
+            securityRepository.updateSensor(sensor);
+        }
+    }
+
+
     /**
      * Internal method that handles alarm status changes based on whether
      * the camera currently shows a cat.
@@ -94,22 +117,47 @@ public class SecurityService {
      * @param active
      */
     public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
-        if(!sensor.getActive() && active) {
-            handleSensorActivated();
-        } else if (sensor.getActive() && !active) {
-            handleSensorDeactivated();
+        // Get the current alarm status
+        AlarmStatus currentAlarmStatus = getAlarmStatus();
+        ArmingStatus currentArmingStatus = getArmingStatus();
+
+        // Check if the alarm is active and the system is armed home; if so, sensor changes should not deactivate the alarm
+        if (!(currentAlarmStatus == AlarmStatus.ALARM && currentArmingStatus == ArmingStatus.ARMED_HOME)) {
+            // If the alarm is not in ALARM state or the system is not in ARMED_HOME mode, handle sensor activation/deactivation normally
+            if (!sensor.getActive() && active) {
+                handleSensorActivated();
+            } else if (sensor.getActive() && !active) {
+                handleSensorDeactivated();
+            }
         }
+        // Always update the sensor's active status in the repository
         sensor.setActive(active);
         securityRepository.updateSensor(sensor);
     }
+
     /**
      * Send an image to the SecurityService for processing. The securityService will use its provided
      * ImageService to analyze the image for cats and update the alarm status accordingly.
      * @param currentCameraImage
      */
     public void processImage(BufferedImage currentCameraImage) {
-        catDetected(imageService.imageContainsCat(currentCameraImage, 50.0f));
+        boolean catDetected = imageService.imageContainsCat(currentCameraImage, 50.0f);
+        catDetected(catDetected);
+
+        // If a cat is not detected, check if all sensors are inactive before setting the alarm status to NO_ALARM
+        if (!catDetected && allSensorsInactive()) {
+            setAlarmStatus(AlarmStatus.NO_ALARM);
+        }
     }
+
+    /**
+     * Checks if all sensors are inactive.
+     * @return true if all sensors are inactive, false otherwise.
+     */
+    private boolean allSensorsInactive() {
+        return getSensors().stream().noneMatch(Sensor::getActive);
+    }
+
     public AlarmStatus getAlarmStatus() {
         return securityRepository.getAlarmStatus();
     }
