@@ -33,17 +33,30 @@ public class SecurityService {
      * @param armingStatus
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
-        if (armingStatus == ArmingStatus.ARMED_HOME || armingStatus == ArmingStatus.ARMED_AWAY) {
-            // Reset all sensors to inactive
-            resetAllSensorsToInactive();
+        // Fetch the current state before any changes.
+        ArmingStatus currentStatus = this.securityRepository.getArmingStatus();
+
+        // Transition check
+        if (currentStatus == ArmingStatus.DISARMED && armingStatus == ArmingStatus.ARMED_HOME) {
+
+            List<Sensor> sensors = new ArrayList<>(this.securityRepository.getSensors());
+            for (Sensor sensor : sensors) {
+                if (sensor.getActive()) { //
+                    sensor.setActive(false);
+                    this.securityRepository.updateSensor(sensor);
+                }
+            }
         }
 
+        // Update arming status after handling sensor states
+        this.securityRepository.setArmingStatus(armingStatus);
+
+        // When disarming, always reset the alarm status to NO_ALARM.
         if (armingStatus == ArmingStatus.DISARMED) {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
+            this.securityRepository.setAlarmStatus(AlarmStatus.NO_ALARM);
         }
-
-        securityRepository.setArmingStatus(armingStatus);
     }
+
 
     /**
      * Resets all sensors to inactive state.
@@ -89,6 +102,10 @@ public class SecurityService {
     public void setAlarmStatus(AlarmStatus status) {
         securityRepository.setAlarmStatus(status);
         statusListeners.forEach(sl -> sl.notify(status));
+    }
+    public void armSystem(ArmingStatus armingStatus) {
+        setArmingStatus(armingStatus);
+        resetAllSensorsToInactive();
     }
     /**
      * Internal method for updating the alarm status when a sensor has been activated.
