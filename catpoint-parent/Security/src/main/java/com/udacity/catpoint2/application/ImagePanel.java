@@ -62,7 +62,7 @@ public class ImagePanel extends JPanel implements StatusListener {
         //button that sends the image to the image service
         JButton scanPictureButton = new JButton("Scan Picture");
         scanPictureButton.addActionListener(e -> {
-            securityService.processImage(currentCameraImage);
+            securityService.processImage();
         });
 
         add(cameraHeader, "span 3, wrap");

@@ -5,7 +5,7 @@ import com.udacity.catpoint2.data.AlarmStatus;
 import com.udacity.catpoint2.data.ArmingStatus;
 import com.udacity.catpoint2.data.SecurityRepository;
 import com.udacity.catpoint2.data.Sensor;
-import java.awt.image.BufferedImage;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -142,10 +142,9 @@ public class SecurityService {
     /**
      * Send an image to the SecurityService for processing. The securityService will use its provided
      * ImageService to analyze the image for cats and update the alarm status accordingly.
-     * @param currentCameraImage
      */
-    public void processImage(BufferedImage currentCameraImage) {
-        boolean catDetected = imageService.imageContainsCat(currentCameraImage, 50.0f);
+    public void processImage() {
+        boolean catDetected = imageService.imageContainsCat();
         catDetected(catDetected);
         // If a cat is not detected, check if all sensors are inactive before setting the alarm status to NO_ALARM
         if (!catDetected && allSensorsInactive()) {
