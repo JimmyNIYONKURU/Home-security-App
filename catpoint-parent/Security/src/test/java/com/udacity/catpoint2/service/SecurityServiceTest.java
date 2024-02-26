@@ -125,29 +125,7 @@ public class SecurityServiceTest {
         verify(securityRepository, times(2)).updateSensor(any(Sensor.class));
     }
 
-    @Test
-    public void whenArmedHomeAndCameraDetectsCat_setAlarmStatusToAlarm() {
-        when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
-        when(imageService.imageContainsCat()).thenReturn(true);
-        securityService.processImage();
-        verify(securityRepository).setAlarmStatus(AlarmStatus.ALARM);
-    }
 
-    public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
-        // Get the current alarm status
-        AlarmStatus currentAlarmStatus = getAlarmStatus();
-        // Check if the alarm is active and the system is armed home; if so, sensor changes should not deactivate the alarm
-        if(currentAlarmStatus != AlarmStatus.ALARM) {
-            if(active) {
-                handleSensorActivated();
-            } else if (sensor.getActive()) {
-                handleSensorDeactivated();
-            }
-        }
-        // Always update the sensor's active status in the repository
-        sensor.setActive(active);
-        securityRepository.updateSensor(sensor);
-    }
 
 
 

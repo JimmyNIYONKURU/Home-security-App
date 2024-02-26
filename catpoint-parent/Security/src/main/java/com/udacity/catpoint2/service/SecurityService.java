@@ -117,28 +117,8 @@ public class SecurityService {
             case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
         }
     }
-    /**
-     * Change the activation status for the specified sensor and update alarm status if necessary.
-     * @param sensor
-     * @param active
-     */
-    public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
-        // Get the current alarm status
-        AlarmStatus currentAlarmStatus = getAlarmStatus();
-        ArmingStatus currentArmingStatus = getArmingStatus();
-        // Check if the alarm is active and the system is armed home; if so, sensor changes should not deactivate the alarm
-        if (!(currentAlarmStatus == AlarmStatus.ALARM && currentArmingStatus == ArmingStatus.ARMED_HOME)) {
-            // If the alarm is not in ALARM state or the system is not in ARMED_HOME mode, handle sensor activation/deactivation normally
-            if (!sensor.getActive() && active) {
-                handleSensorActivated();
-            } else if (sensor.getActive() && !active) {
-                handleSensorDeactivated();
-            }
-        }
-        // Always update the sensor's active status in the repository
-        sensor.setActive(active);
-        securityRepository.updateSensor(sensor);
-    }
+
+
     /**
      * Send an image to the SecurityService for processing. The securityService will use its provided
      * ImageService to analyze the image for cats and update the alarm status accordingly.
@@ -147,9 +127,10 @@ public class SecurityService {
         boolean catDetected = imageService.imageContainsCat();
         catDetected(catDetected);
         // If a cat is not detected, check if all sensors are inactive before setting the alarm status to NO_ALARM
-        if (!catDetected && allSensorsInactive()) {
+        if (!catDetected && allSensorsInactive() && getAlarmStatus() != AlarmStatus.NO_ALARM) {
             setAlarmStatus(AlarmStatus.NO_ALARM);
         }
+
     }
     /**
      * Checks if all sensors are inactive.
@@ -172,5 +153,20 @@ public class SecurityService {
     }
     public ArmingStatus getArmingStatus() {
         return securityRepository.getArmingStatus();
+    }
+    public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
+        // Get the current alarm status
+        AlarmStatus currentAlarmStatus = getAlarmStatus();
+        // Check if the alarm is active and the system is armed home; if so, sensor changes should not deactivate the alarm
+        if(currentAlarmStatus != AlarmStatus.ALARM) {
+            if(active) {
+                handleSensorActivated();
+            } else if (sensor.getActive()) {
+                handleSensorDeactivated();
+            }
+        }
+        // Always update the sensor's active status in the repository
+        sensor.setActive(active);
+        securityRepository.updateSensor(sensor);
     }
 }
