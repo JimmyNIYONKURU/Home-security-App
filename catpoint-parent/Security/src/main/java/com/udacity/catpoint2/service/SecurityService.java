@@ -5,7 +5,6 @@ import com.udacity.catpoint2.data.AlarmStatus;
 import com.udacity.catpoint2.data.ArmingStatus;
 import com.udacity.catpoint2.data.SecurityRepository;
 import com.udacity.catpoint2.data.Sensor;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +66,9 @@ public class SecurityService {
      * @param cat True if a cat is detected, otherwise false.
      */
     private void catDetected(Boolean cat) {
-        if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
+        if (!cat && allSensorsInactive() && getAlarmStatus() != AlarmStatus.NO_ALARM) {
+            setAlarmStatus(AlarmStatus.NO_ALARM);
+        }else if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
         } else {
             setAlarmStatus(AlarmStatus.NO_ALARM);
@@ -117,8 +118,6 @@ public class SecurityService {
             case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
         }
     }
-
-
     /**
      * Send an image to the SecurityService for processing. The securityService will use its provided
      * ImageService to analyze the image for cats and update the alarm status accordingly.
@@ -126,11 +125,6 @@ public class SecurityService {
     public void processImage() {
         boolean catDetected = imageService.imageContainsCat();
         catDetected(catDetected);
-        // If a cat is not detected, check if all sensors are inactive before setting the alarm status to NO_ALARM
-        if (!catDetected && allSensorsInactive() && getAlarmStatus() != AlarmStatus.NO_ALARM) {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
-        }
-
     }
     /**
      * Checks if all sensors are inactive.
