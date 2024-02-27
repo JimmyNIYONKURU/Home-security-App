@@ -75,8 +75,6 @@ public class SecurityService {
             setAlarmStatus(AlarmStatus.NO_ALARM);
         }else if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
-        } else {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
         }
         statusListeners.forEach(sl -> sl.catDetected(cat));
     }
