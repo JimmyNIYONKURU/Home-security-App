@@ -20,6 +20,7 @@ public class SecurityService {
     private ImageService imageService;
     private SecurityRepository securityRepository;
     private Set<StatusListener> statusListeners = new HashSet<>();
+    private boolean catDetected = false;
     public SecurityService(SecurityRepository securityRepository, ImageService imageService) {
         this.securityRepository = securityRepository;
         this.imageService = imageService;
@@ -32,6 +33,9 @@ public class SecurityService {
     public void setArmingStatus(ArmingStatus armingStatus) {
         // Fetch the current state before any changes.
         ArmingStatus currentStatus = this.securityRepository.getArmingStatus();
+        if(catDetected && armingStatus == ArmingStatus.ARMED_HOME) {
+            setAlarmStatus(AlarmStatus.ALARM);
+        }
         // Transition check
         if (armingStatus == ArmingStatus.ARMED_HOME) {
             List<Sensor> sensors = new ArrayList<>(this.securityRepository.getSensors());
@@ -66,6 +70,7 @@ public class SecurityService {
      * @param cat True if a cat is detected, otherwise false.
      */
     private void catDetected(Boolean cat) {
+        catDetected = cat;
         if (!cat && allSensorsInactive() && getAlarmStatus() != AlarmStatus.NO_ALARM) {
             setAlarmStatus(AlarmStatus.NO_ALARM);
         }else if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
