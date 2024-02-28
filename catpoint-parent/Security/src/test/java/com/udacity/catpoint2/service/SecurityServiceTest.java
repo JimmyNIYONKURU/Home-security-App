@@ -125,9 +125,4 @@ public class SecurityServiceTest {
         verify(securityRepository, times(2)).updateSensor(any(Sensor.class));
     }
 
-
-
-
-
-
 }
