@@ -33,6 +33,9 @@ public class SecurityService {
     public void setArmingStatus(ArmingStatus armingStatus) {
         // Fetch the current state before any changes.
         ArmingStatus currentStatus = this.securityRepository.getArmingStatus();
+        if(armingStatus == ArmingStatus.DISARMED) {
+            setAlarmStatus(AlarmStatus.NO_ALARM);
+        }
         // Check if the system is transitioning to an armed state
         if (armingStatus != ArmingStatus.DISARMED) {
             // Reset all sensors to inactive when arming the system
@@ -66,10 +69,13 @@ public class SecurityService {
     private void resetAllSensorsToInactive() {
         List<Sensor> sensorsToUpdate = new ArrayList<>(securityRepository.getSensors());
         for (Sensor sensor : sensorsToUpdate) {
-            sensor.setActive(false);
-            securityRepository.updateSensor(sensor);
+            if (sensor.getActive()) { // Only update if the sensor is active
+                sensor.setActive(false);
+                securityRepository.updateSensor(sensor);
+            }
         }
     }
+
     /**
      * Internal method that handles alarm status changes based on whether
      * the camera currently shows a cat.

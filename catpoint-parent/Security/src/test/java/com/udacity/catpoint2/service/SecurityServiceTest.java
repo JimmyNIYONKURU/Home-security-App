@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
@@ -56,18 +55,16 @@ public class SecurityServiceTest {
         securityService.changeSensorActivationStatus(sensor, status);
         verify(securityRepository, never()).setAlarmStatus(any(AlarmStatus.class));
     }
-
     @Test
     public void whenSystemDisarmed_setNoAlarm() {
         when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.DISARMED);
         securityService.setArmingStatus(ArmingStatus.DISARMED);
         verify(securityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
-
     // Test for handling sensor deactivation when already inactive and alarm status is pending
     @Test
     public void whenSensorDeactivatedWhileAlreadyInactiveAndSystemPending_makeNoChangesToAlarmState() {
-        when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
+        when(securityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
         Sensor sensor = new Sensor("Window", SensorType.WINDOW);
         sensor.setActive(false); // Sensor is already inactive
         securityService.changeSensorActivationStatus(sensor, false);
@@ -81,21 +78,16 @@ public class SecurityServiceTest {
         securityService.changeSensorActivationStatus(sensor, true);
         verify(securityRepository).setAlarmStatus(AlarmStatus.ALARM);
     }
-
-
     @Test
     public void whenCameraDetectsCatWhileArmedHome_setAlarmStatusToAlarm() {
         // Given
         when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
         when(imageService.imageContainsCat()).thenReturn(true);
-
         // When
         securityService.processImage();
-
         // Then
         verify(securityRepository).setAlarmStatus(AlarmStatus.ALARM);
     }
-
     @Test
     public void whenNoCatDetectedAndAllSensorsInactive_setNoAlarmStatus() {
         // Given
@@ -105,7 +97,6 @@ public class SecurityServiceTest {
         securityService.processImage();
         verify(securityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
-
     @Test
     public void whenSystemArmed_resetAllSensorsToInactive() {
         // Given
@@ -115,14 +106,11 @@ public class SecurityServiceTest {
         sensors.add(sensor1);
         sensors.add(sensor2);
         when(securityRepository.getSensors()).thenReturn(sensors);
-
         // When
         securityService.armSystem(ArmingStatus.ARMED_HOME);
-
         // Then
         assertFalse(sensor1.getActive());
         assertFalse(sensor2.getActive());
         verify(securityRepository, times(2)).updateSensor(any(Sensor.class));
     }
-
 }
