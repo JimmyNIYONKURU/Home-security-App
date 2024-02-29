@@ -1,5 +1,7 @@
 package com.udacity.catpoint2.service;
+
 import com.udacity.catpoint.service.ImageService;
+import com.udacity.catpoint2.application.StatusListener;
 import com.udacity.catpoint2.data.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,8 +10,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.HashSet;
 import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
@@ -18,6 +22,11 @@ public class SecurityServiceTest {
     private SecurityRepository securityRepository;
     @Mock
     private ImageService imageService;
+    @Mock
+    private StatusListener statusListener1;
+    @Mock
+    private StatusListener statusListener2;
+
     private SecurityService securityService;
     @BeforeEach
     public void setup() {
@@ -113,4 +122,61 @@ public class SecurityServiceTest {
         assertFalse(sensor2.getActive());
         verify(securityRepository, times(2)).updateSensor(any(Sensor.class));
     }
+    @Test
+    public void testSensorStatusChangedNotification() {
+        // Mock status listeners
+        StatusListener statusListener1 = mock(StatusListener.class);
+        StatusListener statusListener2 = mock(StatusListener.class);
+
+        // Add status listeners to the security service
+        securityService.addStatusListener(statusListener1);
+        securityService.addStatusListener(statusListener2);
+
+        // Trigger the method or event that should cause notification
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+
+        // Verify that all status listeners were notified
+        verify(statusListener1, times(1)).sensorStatusChanged();
+        verify(statusListener2, times(1)).sensorStatusChanged();
+    }
+    @Test
+    public void testProcessImageWhenCatDetectedAndSystemIsArmedHome_setAlarmStatusToAlarm() {
+        // Given
+        when(securityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+        when(imageService.imageContainsCat()).thenReturn(true);
+
+        // When
+        securityService.processImage();
+
+        // Then
+        verify(securityRepository).setAlarmStatus(AlarmStatus.ALARM);
+    }
+
+    @Test
+    public void testAddStatusListener() {
+        // Given
+        StatusListener statusListener = mock(StatusListener.class);
+
+        // When
+        securityService.addStatusListener(statusListener);
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+
+        // Then
+        verify(statusListener, times(1)).sensorStatusChanged();
+    }
+
+    @Test
+    public void testRemoveStatusListener() {
+        // Given
+        StatusListener statusListener = mock(StatusListener.class);
+        securityService.addStatusListener(statusListener);
+
+        // When
+        securityService.removeStatusListener(statusListener);
+        securityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+
+        // Then
+        verify(statusListener, never()).sensorStatusChanged();
+    }
+
 }
