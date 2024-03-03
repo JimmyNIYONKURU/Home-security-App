@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a java-based application designed to enhance by monitoring sensors.
+This is a java-based application designed to enhance home security by monitoring sensors.
 
 ## Features
 
